@@ -38,6 +38,9 @@ android {
     }
 }
 
+
+
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -53,4 +56,9 @@ dependencies {
     implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation ("com.github.Dimezis:BlurView:version-2.0.3")
     implementation(libs.androidx.activity)
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
 }

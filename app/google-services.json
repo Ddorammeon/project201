@@ -1,13 +1,33 @@
 {
   "project_info": {
-    "project_number": "1099095159613",
-    "project_id": "project201-2",
-    "storage_bucket": "project201-2.appspot.com"
+    "project_number": "872980452100",
+    "firebase_url": "https://cgv2-70189-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "cgv2-70189",
+    "storage_bucket": "cgv2-70189.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1099095159613:android:52fdbcdd17ad523ec08b54",
+        "mobilesdk_app_id": "1:872980452100:android:2c3b77c6a0f7f1981a7651",
+        "android_client_info": {
+          "package_name": "com.example.cgv2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqJeEgKep1TbqvPLOaWyhfByJyB8YVU8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872980452100:android:550a358fad98e4111a7651",
         "android_client_info": {
           "package_name": "com.uilover.project2002"
         }
@@ -15,7 +35,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBcgvkAD1qnuvQ8Yv80rqcO4vF1Ck0R4Sc"
+          "current_key": "AIzaSyBqJeEgKep1TbqvPLOaWyhfByJyB8YVU8U"
         }
       ],
       "services": {

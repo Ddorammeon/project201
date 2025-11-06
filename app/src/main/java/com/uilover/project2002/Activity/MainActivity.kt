@@ -1,5 +1,6 @@
 package com.uilover.project2002.Activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -19,6 +21,7 @@ import com.uilover.project2002.Adapter.FilmListAdapter
 import com.uilover.project2002.Adapter.SliderAdapter
 import com.uilover.project2002.Models.Film
 import com.uilover.project2002.Models.SliderItems
+import com.uilover.project2002.auth.LoginActivity
 import com.uilover.project2002.databinding.ActivityMainBinding
 
 
@@ -31,7 +34,14 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager2.currentItem = binding.viewPager2.currentItem + 1
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
