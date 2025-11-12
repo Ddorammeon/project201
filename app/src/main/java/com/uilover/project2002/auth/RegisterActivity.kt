@@ -43,5 +43,10 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
         }
+
+        // Bắt sự kiện nút chuyển đến trang Đăng nhập
+        binding.btnToLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 }
