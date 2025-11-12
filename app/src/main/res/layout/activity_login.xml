@@ -1,34 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F7F9FC"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
 
+    <!-- Logo/Icon -->
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Logo"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Chào mừng trở lại"
+        android:textColor="#1A202C"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Đăng nhập để tiếp tục"
+        android:textColor="#718096"
+        android:textSize="16sp" />
+
+    <!-- Email Input -->
     <EditText
         android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/input_background"
+        android:drawableStart="@android:drawable/ic_dialog_email"
+        android:drawablePadding="12dp"
+        android:drawableTint="#718096"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:paddingHorizontal="16dp"
+        android:textColor="#1A202C"
+        android:textColorHint="#A0AEC0"
+        android:textSize="16sp" />
 
+    <!-- Password Input -->
     <EditText
         android:id="@+id/edtPassword"
-        android:hint="Password"
-        android:inputType="textPassword"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="56dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/input_background"
+        android:drawableStart="@android:drawable/ic_lock_idle_lock"
+        android:drawablePadding="12dp"
+        android:drawableTint="#718096"
+        android:hint="Mật khẩu"
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:textColor="#1A202C"
+        android:textColorHint="#A0AEC0"
+        android:textSize="16sp" />
 
+    <!-- Forgot Password -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="end"
+        android:paddingVertical="8dp"
+        android:text="Quên mật khẩu?"
+        android:textColor="#3B82F6"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Login Button -->
     <Button
         android:id="@+id/btnLogin"
-        android:text="Đăng nhập"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="56dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/button_primary"
+        android:text="Đăng nhập"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
+    <!-- Divider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="#E2E8F0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:text="hoặc"
+            android:textColor="#A0AEC0"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="#E2E8F0" />
+    </LinearLayout>
+
+    <!-- Register Button -->
     <Button
         android:id="@+id/btnToRegister"
-        android:text="Chưa có tài khoản? Đăng ký"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="56dp"
+        android:background="@drawable/button_secondary"
+        android:text="Tạo tài khoản mới"
+        android:textAllCaps="false"
+        android:textColor="#3B82F6"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
 </LinearLayout>
