@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.*
@@ -16,7 +17,11 @@ import com.uilover.project2002.Models.Film
 import com.uilover.project2002.Models.RoomInfo
 import com.uilover.project2002.Models.Seat
 import com.uilover.project2002.Models.Showtime
+import com.uilover.project2002.Retrofit.RetrofitInstance
+import com.uilover.project2002.ServerModels.LockSeatRequest
+import com.uilover.project2002.ServerModels.UnlockSeatRequest
 import com.uilover.project2002.databinding.ActivitySeatListBinding
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -205,6 +210,44 @@ class SeatListActivity : AppCompatActivity(),
                 // TODO: Gọi API để lock ghế ở đây
                 // lockSeatsOnServer(selectedName.split(","))
             }
+            override fun onSeatLocked(seatName: String) {
+                lifecycleScope.launch {
+                    try {
+                        val seats = seatAdapter?.selectedSeatName?.toList() ?: return@launch
+                        val req = LockSeatRequest(
+                            movie = film.Title,
+                            date = selectedDate,
+                            time = selectedTime,
+                            room = selectedRoom,
+                            seats = seats,
+                            userId = "USER123" // TODO: truyền id thật
+                        )
+                        RetrofitInstance.api.lockSeats(req)
+                        loadSeatStatus() // refresh UI
+                    } catch (e: Exception) {
+                        Log.e("SeatList", "Lock error: ${e.message}")
+                    }
+                }
+            }
+
+            override fun onSeatUnlocked(seatName: String) {
+                lifecycleScope.launch {
+                    try {
+                        val req = UnlockSeatRequest(
+                            movie = film.Title,
+                            date = selectedDate,
+                            time = selectedTime,
+                            room = selectedRoom,
+                            seats = listOf(seatName),
+                            userId = "USER123" // TODO: truyền id thật
+                        )
+                        RetrofitInstance.api.unlockSeats(req)
+                        loadSeatStatus() // refresh UI
+                    } catch (e: Exception) {
+                        Log.e("SeatList", "Unlock error: ${e.message}")
+                    }
+                }
+            }
         })
 
         binding.seatRecyclerview.adapter = seatAdapter
@@ -241,8 +284,25 @@ class SeatListActivity : AppCompatActivity(),
         */
 
         // Giả lập data cho demo
+        if (selectedDate.isEmpty() || selectedTime.isEmpty() || selectedRoom.isEmpty()) return
 
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.api.getSeatStatus(
+                    movie = film.Title,
+                    date = selectedDate,
+                    time = selectedTime,
+                    room = selectedRoom
+                )
 
+                if (response.success) {
+                    updateSeatsUI(response.booked, response.locked)
+                }
+
+            } catch (e: Exception) {
+                Log.e("SeatListActivity", "Error: ${e.message}")
+            }
+        }
     }
 
     private fun updateSeatsUI(bookedSeats: List<String>, lockedSeats: List<String>) {
@@ -292,6 +352,7 @@ class SeatListActivity : AppCompatActivity(),
             finish()
         }
     }
+
 
     private fun getIntentExtra() {
         film = intent.getParcelableExtra("film")!!

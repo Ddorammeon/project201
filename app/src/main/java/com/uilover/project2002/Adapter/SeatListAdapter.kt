@@ -14,7 +14,7 @@ class SeatListAdapter(
     private val selectedSeat: SelectedSeat
 ) : RecyclerView.Adapter<SeatListAdapter.SeatViewholder>() {
 
-    private val selectedSeatName = ArrayList<String>()
+    val selectedSeatName = ArrayList<String>()
 
     class SeatViewholder(val binding: SeatItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -53,11 +53,13 @@ class SeatListAdapter(
                     seat.status = Seat.SeatStatus.SELECTED
                     selectedSeatName.add(seat.name)
                     notifyItemChanged(position)
+                    selectedSeat.onSeatLocked(seat.name)  // <<<< THÊM DÒNG NÀY
                 }
                 Seat.SeatStatus.SELECTED -> {
                     seat.status = Seat.SeatStatus.AVAILABLE
                     selectedSeatName.remove(seat.name)
                     notifyItemChanged(position)
+                    selectedSeat.onSeatUnlocked(seat.name)  // <<<< THÊM DÒNG NÀY
                 }
                 else -> {
                     // Ghế không khả dụng - không làm gì
@@ -73,19 +75,28 @@ class SeatListAdapter(
     // Thêm method để update trạng thái ghế từ server
     fun updateSeatStatus(bookedSeats: List<String>, lockedSeats: List<String>) {
         seatList.forEachIndexed { index, seat ->
-            val seatNumber = (index + 1).toString()
+            val seatName = seat.name
 
             when {
-                bookedSeats.contains(seatNumber) -> {
+                bookedSeats.contains(seatName) -> {
+                    // Ghế đã được thanh toán → UNAVAILABLE
                     seat.status = Seat.SeatStatus.UNAVAILABLE
                 }
-                lockedSeats.contains(seatNumber) -> {
-                    // Ghế đang bị lock bởi user khác
-                    seat.status = Seat.SeatStatus.UNAVAILABLE
+                lockedSeats.contains(seatName) -> {
+                    // <<<< SỬA ĐOẠN NÀY >>>>
+                    // Nếu ghế đang locked NHƯNG là ghế mình đã chọn → giữ nguyên SELECTED
+                    if (selectedSeatName.contains(seatName)) {
+                        seat.status = Seat.SeatStatus.SELECTED
+                    } else {
+                        // Ghế locked bởi user khác → UNAVAILABLE
+                        seat.status = Seat.SeatStatus.UNAVAILABLE
+                    }
                 }
                 else -> {
-                    // Chỉ set AVAILABLE nếu chưa được user hiện tại chọn
-                    if (!selectedSeatName.contains(seat.name)) {
+                    // Ghế trống → chỉ set AVAILABLE nếu chưa được user hiện tại chọn
+                    if (selectedSeatName.contains(seatName)) {
+                        seat.status = Seat.SeatStatus.SELECTED
+                    } else {
                         seat.status = Seat.SeatStatus.AVAILABLE
                     }
                 }
@@ -96,5 +107,7 @@ class SeatListAdapter(
 
     interface SelectedSeat {
         fun Return(selectedName: String, num: Int)
+        fun onSeatLocked(seatName: String)      // <<<< THÊM
+        fun onSeatUnlocked(seatName: String)
     }
 }

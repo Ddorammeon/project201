@@ -9,7 +9,7 @@ object RetrofitInstance {
 
     private val retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/") // đổi nếu dùng device thật
+            .baseUrl("http://10.0.2.2:3000/")  // ĐÚNG PORT BACKEND
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
