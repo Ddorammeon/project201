@@ -1,11 +1,15 @@
-package com.uilover.project2002
+package com.uilover.project2002.Activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.uilover.project2002.Adapter.FilmListAdapter // We will create or reuse an adapter
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.uilover.project2002.Adapter.FilmListAdapter
 import com.uilover.project2002.Models.Film
 import com.uilover.project2002.databinding.ActivityFavoriteFilmsBinding
 
@@ -55,7 +59,8 @@ class FavoriteFilmsActivity : AppCompatActivity() {
                     val filmId = filmIdSnapshot.key
                     if (filmId != null) {
                         // For each favorite film ID, get the film details
-                        filmsRef.child(filmId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        filmsRef.child(filmId).addListenerForSingleValueEvent(object :
+                            ValueEventListener {
                             override fun onDataChange(filmDataSnapshot: DataSnapshot) {
                                 val film = filmDataSnapshot.getValue(Film::class.java)
                                 if (film != null) {

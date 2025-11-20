@@ -24,7 +24,7 @@ import com.uilover.project2002.Models.SliderItems
 import com.uilover.project2002.auth.LoginActivity
 import com.uilover.project2002.auth.RegisterActivity
 import com.uilover.project2002.databinding.ActivityMainBinding
-
+import com.uilover.project2002.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,12 +78,40 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-
         // 6️⃣ Khởi tạo các phần khác
         initBanner()
         initTopMoving()
         initUpcomming()
+
+// ✅ Sửa lại code xử lý ChipNavigationBar
+        val bottomNav = binding.bottomNav
+        bottomNav.setOnItemSelectedListener { id ->
+            when (id) {
+                // Giả sử id của item trang chủ trong bottom_menu.xml là 'explorer'
+                R.id.explorer -> {
+                    // Không cần làm gì nếu đã ở MainActivity
+                }
+
+                // Đây là phần quan trọng
+                R.id.favorites -> {
+                    val intent = Intent(this, FavoriteFilmsActivity::class.java)
+                    startActivity(intent)
+                }
+
+                R.id.cart -> {
+                    // Xử lý khi nhấn vào giỏ hàng
+                }
+
+                R.id.profile -> {
+                    // Xử lý khi nhấn vào hồ sơ
+                }
+            }
+        }
+
+
     }
+
+
 
 
     private fun initTopMoving() {
