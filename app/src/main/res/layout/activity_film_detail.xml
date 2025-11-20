@@ -83,7 +83,7 @@
                             app:srcCompat="@drawable/share" />
 
                         <ImageView
-                            android:id="@+id/imageView5"
+                            android:id="@+id/FavoriteBtn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
