@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.uilover.project2002.auth.LoginActivity
 import com.uilover.project2002.databinding.ActivityIntroBinding
 
 class IntroActivity : AppCompatActivity() {

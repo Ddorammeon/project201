@@ -24,6 +24,10 @@ import com.uilover.project2002.Models.SliderItems
 import com.uilover.project2002.auth.LoginActivity
 import com.uilover.project2002.auth.RegisterActivity
 import com.uilover.project2002.databinding.ActivityMainBinding
+import com.uilover.project2002.R
+import com.uilover.project2002.Activity.FavoriteFilmsActivity
+import com.uilover.project2002.Activity.BookingHistoryActivity
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -83,7 +87,31 @@ class MainActivity : AppCompatActivity() {
         initBanner()
         initTopMoving()
         initUpcomming()
+
+        val bottomNav = binding.bottomNav   // tên theo ID trong XML
+
+        bottomNav.setOnItemSelectedListener { id ->
+            when (id) {
+                R.id.explorer -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
+
+                R.id.favorites -> {
+                    startActivity(Intent(this, FavoriteFilmsActivity::class.java))
+                }
+
+                R.id.cart -> {
+                    startActivity(Intent(this, BookingHistoryActivity::class.java))
+                }
+
+                R.id.profile -> {
+                }
+            }
+            true
+        }
+
     }
+
 
 
     private fun initTopMoving() {

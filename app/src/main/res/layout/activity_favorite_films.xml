@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1A202C"
-    tools:context=".FavoriteFilmsActivity">
+    tools:context=".Activity.FavoriteFilmsActivity">
 
-    <!-- Header -->
     <ImageView
         android:id="@+id/backBtn"
         android:layout_width="wrap_content"
@@ -19,13 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/back_dark"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Phim yêu thích"
+        android:text="Favorite Films"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -34,7 +34,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/backBtn" />
 
-    <!-- RecyclerView for Favorite Films -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoriteFilmsRecyclerView"
         android:layout_width="0dp"
@@ -42,15 +41,15 @@
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:paddingHorizontal="8dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingBottom="16dp"  android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backBtn"
-        tools:listitem="@layout/viewholder_film"
-        tools:visibility="visible" />
+        tools:listitem="@layout/viewholder_favorite_item"
+        tools:visibility="visible"
+        tools:itemCount="3"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <!-- Empty State View -->
     <LinearLayout
         android:id="@+id/emptyStateLayout"
         android:layout_width="wrap_content"
@@ -58,23 +57,24 @@
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backBtn"
         tools:visibility="visible">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="16dp"
-            android:src="@android:drawable/star_off"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/ic_menu_compass"
+            android:contentDescription="Empty Favorites Icon"
             app:tint="#A0AEC0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Danh sách trống"
+            android:layout_marginTop="16dp"
+            android:text="No Favorite Films Yet!"
             android:textColor="#A0AEC0"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -82,10 +82,31 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Thêm phim vào danh sách yêu thích của bạn!"
-            android:textColor="#718096"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Go to the movie details page and tap the heart icon to add films."
+            android:textColor="#A0AEC0"
             android:textSize="14sp" />
+
     </LinearLayout>
+
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/light_black_bg"
+        android:padding="4dp"
+        app:cnb_iconColor="@color/white"
+        app:cnb_iconSize="20dp"
+        app:cnb_menuResource="@menu/bottom_menu"
+        app:cnb_orientationMode="horizontal"
+        app:cnb_radius="10dp"
+        app:cnb_unselectedColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
