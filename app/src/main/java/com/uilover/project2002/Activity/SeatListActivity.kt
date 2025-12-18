@@ -1,5 +1,6 @@
 package com.uilover.project2002.Activity
 
+import android.content.Intent
 import android.icu.text.DecimalFormat
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.uilover.project2002.Adapter.DateAdapter
 import com.uilover.project2002.Adapter.SeatListAdapter
@@ -21,6 +23,8 @@ import com.uilover.project2002.Retrofit.RetrofitInstance
 import com.uilover.project2002.ServerModels.LockSeatRequest
 import com.uilover.project2002.ServerModels.UnlockSeatRequest
 import com.uilover.project2002.databinding.ActivitySeatListBinding
+import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -45,6 +49,13 @@ class SeatListActivity : AppCompatActivity(),
     private var dateAdapter: DateAdapter? = null
     private var timeAdapter: TimeAdapter? = null
     private var seatAdapter: SeatListAdapter? = null
+
+    private var uid = FirebaseAuth.getInstance().currentUser?.uid
+    private val selectedSeatsMap = mutableMapOf<String, MutableList<String>>()
+
+    private fun getShowtimeKey(): String {
+        return "${film.Title}_${selectedDate}_${selectedTime}_${selectedRoom}"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -185,19 +196,19 @@ class SeatListActivity : AppCompatActivity(),
                 return if (position % 7 == 3) 1 else 1
             }
         }
-
         binding.seatRecyclerview.layoutManager = gridLayoutManager
 
         val seatList = mutableListOf<Seat>()
         val numberSeats = roomInfo.totalSeats
 
-        // Tạo danh sách ghế với tên từ seatLayout
         for (i in 1..numberSeats) {
             val seatName = roomInfo.seatLayout.getOrNull(i) ?: i.toString()
-
-            // Mặc định tất cả ghế AVAILABLE, sẽ update sau khi gọi API
             seatList.add(Seat(Seat.SeatStatus.AVAILABLE, seatName))
         }
+
+        // <<<< SỬA: Lấy danh sách ghế đã chọn của suất chiếu này (nếu có)
+        val showtimeKey = getShowtimeKey()
+        val previouslySelected = selectedSeatsMap[showtimeKey] ?: mutableListOf()
 
         seatAdapter = SeatListAdapter(seatList, this, object : SeatListAdapter.SelectedSeat {
             override fun Return(selectedName: String, num: Int) {
@@ -207,9 +218,10 @@ class SeatListActivity : AppCompatActivity(),
                 number = num
                 binding.priceTxt.text = "$$price"
 
-                // TODO: Gọi API để lock ghế ở đây
-                // lockSeatsOnServer(selectedName.split(","))
+                // <<<< LƯU lại danh sách ghế đã chọn
+                selectedSeatsMap[showtimeKey] = seatAdapter?.selectedSeatName?.toMutableList() ?: mutableListOf()
             }
+
             override fun onSeatLocked(seatName: String) {
                 lifecycleScope.launch {
                     try {
@@ -220,10 +232,14 @@ class SeatListActivity : AppCompatActivity(),
                             time = selectedTime,
                             room = selectedRoom,
                             seats = seats,
-                            userId = "USER123" // TODO: truyền id thật
+                            userId = uid
                         )
                         RetrofitInstance.api.lockSeats(req)
-                        loadSeatStatus() // refresh UI
+
+                        // <<<< LƯU lại
+                        selectedSeatsMap[showtimeKey] = seatAdapter?.selectedSeatName?.toMutableList() ?: mutableListOf()
+
+                        loadSeatStatus()
                     } catch (e: Exception) {
                         Log.e("SeatList", "Lock error: ${e.message}")
                     }
@@ -239,10 +255,14 @@ class SeatListActivity : AppCompatActivity(),
                             time = selectedTime,
                             room = selectedRoom,
                             seats = listOf(seatName),
-                            userId = "USER123" // TODO: truyền id thật
+                            userId = uid
                         )
                         RetrofitInstance.api.unlockSeats(req)
-                        loadSeatStatus() // refresh UI
+
+                        // <<<< CẬP NHẬT
+                        selectedSeatsMap[showtimeKey] = seatAdapter?.selectedSeatName?.toMutableList() ?: mutableListOf()
+
+                        loadSeatStatus()
                     } catch (e: Exception) {
                         Log.e("SeatList", "Unlock error: ${e.message}")
                     }
@@ -250,40 +270,18 @@ class SeatListActivity : AppCompatActivity(),
             }
         })
 
+        // <<<< KHÔI PHỤC ghế đã chọn trước đó
+        seatAdapter?.selectedSeatName?.addAll(previouslySelected)
+
         binding.seatRecyclerview.adapter = seatAdapter
         binding.seatRecyclerview.isNestedScrollingEnabled = false
 
-        // Sau khi render ghế, gọi API để lấy trạng thái ghế
         loadSeatStatus()
     }
 
     private fun loadSeatStatus() {
         // TODO: Gọi API server của bạn để lấy trạng thái ghế
-        // GET /api/seats/status?movie={film.title}&date={selectedDate}&time={selectedTime}&room={selectedRoom}
 
-        /* Example:
-        apiService.getSeatStatus(
-            movie = film.title,
-            date = selectedDate,
-            time = selectedTime,
-            room = selectedRoom
-        ).enqueue(object : Callback<SeatStatusResponse> {
-            override fun onResponse(call: Call<SeatStatusResponse>, response: Response<SeatStatusResponse>) {
-                if (response.isSuccessful) {
-                    val status = response.body()
-                    status?.let {
-                        updateSeatsUI(it.booked, it.locked)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<SeatStatusResponse>, t: Throwable) {
-                Log.e("SeatListActivity", "Error: ${t.message}")
-            }
-        })
-        */
-
-        // Giả lập data cho demo
         if (selectedDate.isEmpty() || selectedTime.isEmpty() || selectedRoom.isEmpty()) return
 
         lifecycleScope.launch {
@@ -349,9 +347,56 @@ class SeatListActivity : AppCompatActivity(),
 
     private fun setVariable() {
         binding.backBtn.setOnClickListener {
+            unlockAllSelectedSeats()
             finish()
         }
+        binding.button.setOnClickListener {
+            if (selectedDate.isEmpty() || selectedTime.isEmpty() || seatAdapter?.selectedSeatName.isNullOrEmpty()) {
+                Toast.makeText(this, "Hãy chọn ngày, giờ và ghế!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, TicketDetailActivity::class.java)
+            intent.putExtra("movie", film.Title)
+            intent.putExtra("date", selectedDate)
+            intent.putExtra("time", selectedTime)
+            intent.putExtra("room", selectedRoom)
+            intent.putExtra("price", price)
+            intent.putExtra("seats", seatAdapter!!.selectedSeatName.joinToString(","))
+
+            startActivity(intent)
+        }
     }
+    private fun unlockAllSelectedSeats() {
+        val showtimeKey = getShowtimeKey()
+        val selectedSeats = selectedSeatsMap[showtimeKey] ?: emptyList()
+
+        if (selectedSeats.isEmpty() || selectedDate.isEmpty() || selectedTime.isEmpty() || selectedRoom.isEmpty()) {
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val req = UnlockSeatRequest(
+                    movie = film.Title,
+                    date = selectedDate,
+                    time = selectedTime,
+                    room = selectedRoom,
+                    seats = selectedSeats,
+                    userId = uid
+                )
+                RetrofitInstance.api.unlockSeats(req)
+
+                // <<<< XÓA khỏi map khi thoát
+                selectedSeatsMap.remove(showtimeKey)
+
+                Log.d("SeatListActivity", "Unlocked ${selectedSeats.size} seats on exit")
+            } catch (e: Exception) {
+                Log.e("SeatListActivity", "Error unlocking seats on exit: ${e.message}")
+            }
+        }
+    }
+
 
 
     private fun getIntentExtra() {

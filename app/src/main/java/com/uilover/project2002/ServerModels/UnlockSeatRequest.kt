@@ -6,5 +6,5 @@ data class UnlockSeatRequest(
     val time: String,
     val room: String,
     val seats: List<String>,
-    val userId: String
+    val userId: String?
 )

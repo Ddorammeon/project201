@@ -9,9 +9,12 @@ import com.uilover.project2002.ServerModels.LockSeatResponse
 import com.uilover.project2002.ServerModels.SeatStatusResponse
 import com.uilover.project2002.ServerModels.UnlockSeatRequest
 import com.uilover.project2002.ServerModels.UnlockSeatResponse
+import com.uilover.project2002.booking.BookingResponse
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -35,5 +38,10 @@ interface ApiService {
     // 4. Confirm booking
     @POST("api/booking/confirm")
     suspend fun confirmBooking(@Body req: ConfirmBookingRequest): ConfirmBookingResponse
+
+    @GET("api/bookings/user/{userId}")
+    fun getUserBookings(
+        @Path("userId") userId: String
+    ): Call<BookingResponse>
 }
 

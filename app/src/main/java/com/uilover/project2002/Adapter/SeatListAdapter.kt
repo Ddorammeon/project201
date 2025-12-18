@@ -76,29 +76,20 @@ class SeatListAdapter(
     fun updateSeatStatus(bookedSeats: List<String>, lockedSeats: List<String>) {
         seatList.forEachIndexed { index, seat ->
             val seatName = seat.name
-
             when {
                 bookedSeats.contains(seatName) -> {
-                    // Ghế đã được thanh toán → UNAVAILABLE
                     seat.status = Seat.SeatStatus.UNAVAILABLE
                 }
+                selectedSeatName.contains(seatName) -> {
+                    // <<<< SỬA: Ưu tiên ghế mình đã chọn → SELECTED
+                    seat.status = Seat.SeatStatus.SELECTED
+                }
                 lockedSeats.contains(seatName) -> {
-                    // <<<< SỬA ĐOẠN NÀY >>>>
-                    // Nếu ghế đang locked NHƯNG là ghế mình đã chọn → giữ nguyên SELECTED
-                    if (selectedSeatName.contains(seatName)) {
-                        seat.status = Seat.SeatStatus.SELECTED
-                    } else {
-                        // Ghế locked bởi user khác → UNAVAILABLE
-                        seat.status = Seat.SeatStatus.UNAVAILABLE
-                    }
+                    // <<<< SỬA: Ghế locked bởi người khác → UNAVAILABLE
+                    seat.status = Seat.SeatStatus.UNAVAILABLE
                 }
                 else -> {
-                    // Ghế trống → chỉ set AVAILABLE nếu chưa được user hiện tại chọn
-                    if (selectedSeatName.contains(seatName)) {
-                        seat.status = Seat.SeatStatus.SELECTED
-                    } else {
-                        seat.status = Seat.SeatStatus.AVAILABLE
-                    }
+                    seat.status = Seat.SeatStatus.AVAILABLE
                 }
             }
         }
